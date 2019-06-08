@@ -284,6 +284,8 @@ gen_type (const char *ret_val, tree t, formals_style style)
 	case POINTER_TYPE:
 	  if (TYPE_ATOMIC (t))
 	    ret_val = concat ("_Atomic ", ret_val, NULL);
+	  if (TYPE_DEPENDENT_PTR (t))
+	    ret_val = concat ("_Dependent_ptr ", ret_val, NULL);
 	  if (TYPE_READONLY (t))
 	    ret_val = concat ("const ", ret_val, NULL);
 	  if (TYPE_VOLATILE (t))
@@ -427,6 +429,8 @@ gen_type (const char *ret_val, tree t, formals_style style)
     }
   if (TYPE_ATOMIC (t))
     ret_val = concat ("_Atomic ", ret_val, NULL);
+  if (TYPE_DEPENDENT_PTR (t))
+    ret_val = concat ("_Dependent_ptr ", ret_val, NULL);
   if (TYPE_READONLY (t))
     ret_val = concat ("const ", ret_val, NULL);
   if (TYPE_VOLATILE (t))

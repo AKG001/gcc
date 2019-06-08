@@ -181,6 +181,8 @@ pp_c_cv_qualifiers (c_pretty_printer *pp, int qualifiers, bool func_type)
 
   if (qualifiers & TYPE_QUAL_ATOMIC)
     pp_c_ws_string (pp, "_Atomic");
+  if (qualifiers & TYPE_QUAL_DEPENDENT_PTR)
+    pp_c_ws_string (pp, "_Dependent_ptr");
   if (qualifiers & TYPE_QUAL_CONST)
     pp_c_ws_string (pp, func_type ? "__attribute__((const))" : "const");
   if (qualifiers & TYPE_QUAL_VOLATILE)

@@ -334,6 +334,8 @@ print_node (FILE *file, const char *prefix, tree node, int indent,
     fputs (" readonly", file);
   if (TYPE_P (node) && TYPE_ATOMIC (node))
     fputs (" atomic", file);
+  if (TYPE_P (node) && TYPE_DEPENDENT_PTR (node))
+    fputs (" dependent_ptr", file);
   if (!TYPE_P (node) && TREE_CONSTANT (node))
     fputs (" constant", file);
   else if (TYPE_P (node) && TYPE_SIZES_GIMPLIFIED (node))

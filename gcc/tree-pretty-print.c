@@ -1464,6 +1464,8 @@ dump_generic_node (pretty_printer *pp, tree node, int spc, dump_flags_t flags,
 
 	if (quals & TYPE_QUAL_ATOMIC)
 	  pp_string (pp, "atomic ");
+  	if (quals & TYPE_QUAL_DEPENDENT_PTR)
+    	  pp_string (pp, "dependent_ptr ");
 	if (quals & TYPE_QUAL_CONST)
 	  pp_string (pp, "const ");
 	else if (quals & TYPE_QUAL_VOLATILE)
@@ -1816,6 +1818,8 @@ dump_generic_node (pretty_printer *pp, tree node, int spc, dump_flags_t flags,
 
 	if (quals & TYPE_QUAL_ATOMIC)
 	  pp_string (pp, "atomic ");
+	if (quals & TYPE_QUAL_DEPENDENT_PTR)
+          pp_string (pp, "dependent_ptr ");
 	if (quals & TYPE_QUAL_CONST)
 	  pp_string (pp, "const ");
 	if (quals & TYPE_QUAL_VOLATILE)

@@ -498,6 +498,7 @@ c_keyword_starts_typename (enum rid keyword)
     case RID_TYPEOF:
     case RID_CONST:
     case RID_ATOMIC:
+    case RID_DEPENDENT_PTR:
     case RID_VOLATILE:
     case RID_RESTRICT:
     case RID_ATTRIBUTE:
@@ -601,6 +602,7 @@ c_token_is_qualifier (c_token *token)
 	case RID_RESTRICT:
 	case RID_ATTRIBUTE:
 	case RID_ATOMIC:
+  	case RID_DEPENDENT_PTR:
 	  return true;
 	default:
 	  return false;
@@ -682,6 +684,7 @@ c_token_starts_declspecs (c_token *token)
 	case RID_SAT:
 	case RID_ALIGNAS:
 	case RID_ATOMIC:
+  	case RID_DEPENDENT_PTR:
 	case RID_AUTO_TYPE:
 	  return true;
 	default:
@@ -2860,6 +2863,11 @@ c_parser_declspecs (c_parser *parser, struct c_declspecs *specs,
 	  else
 	    declspecs_add_qual (loc, specs, value);
 	  break;
+  	case RID_DEPENDENT_PTR:
+    	  attrs_ok = true;
+    	  declspecs_add_qual (loc, specs, c_parser_peek_token (parser)->value);
+    	  c_parser_consume_token (parser);
+    	  break;
 	case RID_CONST:
 	case RID_VOLATILE:
 	case RID_RESTRICT:
@@ -4270,6 +4278,7 @@ c_parser_attribute_any_word (c_parser *parser)
 	case RID_TRANSACTION_ATOMIC:
 	case RID_TRANSACTION_CANCEL:
 	case RID_ATOMIC:
+  	case RID_DEPENDENT_PTR:
 	case RID_AUTO_TYPE:
 	case RID_INT_N_0:
 	case RID_INT_N_1:

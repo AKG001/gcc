@@ -279,6 +279,7 @@ enum c_declspec_word {
   cdw_volatile,
   cdw_restrict,
   cdw_atomic,
+  cdw_dependent_ptr,
   cdw_saturating,
   cdw_alignas,
   cdw_address_space,
@@ -387,6 +388,8 @@ struct c_declspecs {
   BOOL_BITFIELD restrict_p : 1;
   /* Whether "_Atomic" was specified.  */
   BOOL_BITFIELD atomic_p : 1;
+  /* Whether "_Dependent_ptr" was specified.  */
+  BOOL_BITFIELD dependent_ptr_p : 1;
   /* Whether "_Sat" was specified.  */
   BOOL_BITFIELD saturating_p : 1;
   /* Whether any alignment specifier (even with zero alignment) was
