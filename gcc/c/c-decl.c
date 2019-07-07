@@ -2586,6 +2586,9 @@ merge_decls (tree newdecl, tree olddecl, tree newtype, tree oldtype)
   if (TREE_THIS_VOLATILE (newdecl))
     TREE_THIS_VOLATILE (olddecl) = 1;
 
+  if (TREE_THIS_DEPENDENT_PTR (newdecl))
+    TREE_THIS_DEPENDENT_PTR (olddecl) = 1;
+
   /* Merge deprecatedness.  */
   if (TREE_DEPRECATED (newdecl))
     TREE_DEPRECATED (olddecl) = 1;
@@ -2637,6 +2640,7 @@ merge_decls (tree newdecl, tree olddecl, tree newtype, tree oldtype)
 	  DECL_NO_INSTRUMENT_FUNCTION_ENTRY_EXIT (newdecl)
 	    |= DECL_NO_INSTRUMENT_FUNCTION_ENTRY_EXIT (olddecl);
 	  TREE_THIS_VOLATILE (newdecl) |= TREE_THIS_VOLATILE (olddecl);
+	  TREE_THIS_DEPENDENT_PTR (newdecl) |= TREE_THIS_DEPENDENT_PTR (olddecl);
 	  DECL_IS_MALLOC (newdecl) |= DECL_IS_MALLOC (olddecl);
 	  DECL_IS_OPERATOR_NEW (newdecl) |= DECL_IS_OPERATOR_NEW (olddecl);
 	  TREE_READONLY (newdecl) |= TREE_READONLY (olddecl);
@@ -7308,7 +7312,7 @@ grokdeclarator (const struct c_declarator *declarator,
 	DECL_REGISTER (decl) = 1;
       }
 
-    /* Record constancy and volatility.  */
+    /* Record constancy, data dependency and volatility.  */
     c_apply_type_quals_to_decl (type_quals, decl);
 
     /* Apply _Alignas specifiers.  */
@@ -8271,6 +8275,11 @@ finish_struct (location_t loc, tree t, tree fieldlist, tree attributes,
 	 treated in some ways as volatile.  */
       if (TREE_THIS_VOLATILE (x))
 	C_TYPE_FIELDS_VOLATILE (t) = 1;
+
+      /* Any field that is a dependent pointer means variables of this type must be
+	 treated in some ways as dependent pointer.  */
+      if (TREE_THIS_DEPENDENT_PTR (x))
+	C_TYPE_FIELDS_DEPENDENT_PTR (t) = 1;
 
       /* Any field of nominal variable size implies structure is too.  */
       if (C_DECL_VARIABLE_SIZE (x))

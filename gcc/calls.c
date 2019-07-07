@@ -3178,6 +3178,11 @@ can_implement_as_sibling_call_p (tree exp,
       return false;
     }
 
+  if (TYPE_DEPENDENT_PTR (TREE_TYPE (TREE_TYPE (addr))))
+    {
+      maybe_complain_about_tail_call (exp, "dependent_ptr function type");
+    }
+
   /* If the called function is nested in the current one, it might access
      some of the caller's arguments, but could clobber them beforehand if
      the argument areas are shared.  */

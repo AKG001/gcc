@@ -13077,7 +13077,9 @@ decl_quals (const_tree decl)
 	   && TREE_CODE (TREE_TYPE (decl)) != REFERENCE_TYPE
 	   ? TYPE_QUAL_CONST : TYPE_UNQUALIFIED)
 	  | (TREE_THIS_VOLATILE (decl)
-	     ? TYPE_QUAL_VOLATILE : TYPE_UNQUALIFIED));
+	     ? TYPE_QUAL_VOLATILE : TYPE_UNQUALIFIED)
+	  | (TREE_THIS_DEPENDENT_PTR (decl)
+	     ? TYPE_QUAL_DEPENDENT_PTR : TYPE_UNQUALIFIED));
 }
 
 /* Determine the TYPE whose qualifiers match the largest strict subset
@@ -13661,7 +13663,9 @@ generic_parameter_die (tree parm, tree arg,
 	  tmpl_type = TYPE_P (arg) ? arg : TREE_TYPE (arg);
 	  add_type_attribute (tmpl_die, tmpl_type,
 			      (TREE_THIS_VOLATILE (tmpl_type)
-			       ? TYPE_QUAL_VOLATILE : TYPE_UNQUALIFIED),
+			       ? TYPE_QUAL_VOLATILE : TYPE_UNQUALIFIED)
+			      | (TREE_THIS_DEPENDENT_PTR (tmpl_type)
+			       ? TYPE_QUAL_DEPENDENT_PTR : TYPE_UNQUALIFIED),
 			      false, parent_die);
 	}
       else

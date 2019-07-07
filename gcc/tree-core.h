@@ -957,6 +957,7 @@ struct GTY(()) tree_base {
   unsigned protected_flag : 1;
   unsigned deprecated_flag : 1;
   unsigned default_def_flag : 1;
+  unsigned dependent_ptr_flag : 1;
 
   union {
     /* The bits in the following structure should only be used with
@@ -976,8 +977,7 @@ struct GTY(()) tree_base {
       unsigned user_align : 1;
       unsigned nameless_flag : 1;
       unsigned atomic_flag : 1;
-      unsigned dependent_ptr_flag : 1;
-      unsigned spare0 : 2;
+      unsigned spare0 : 3;
 
       unsigned spare1 : 8;
 

@@ -95,6 +95,9 @@ struct ao_ref
   /* Whether the memory is considered a volatile access.  */
   bool volatile_p;
 
+  /* Whether is memory is considered a dependent pointer.  */
+  bool dependent_ptr_p;
+
   bool max_size_known_p () const;
 };
 

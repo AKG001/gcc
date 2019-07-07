@@ -1403,6 +1403,7 @@ gimplify_bind_expr (tree *expr_p, gimple_seq *pre_p)
 	{
 	  if (!DECL_HARD_REGISTER (t)
 	      && !TREE_THIS_VOLATILE (t)
+	      && !TREE_THIS_DEPENDENT_PTR (t)
 	      && !DECL_HAS_VALUE_EXPR_P (t)
 	      /* Only care for variables that have to be in memory.  Others
 		 will be rewritten into SSA names, hence moved to the
@@ -4962,7 +4963,7 @@ gimplify_init_constructor (tree *expr_p, gimple_seq *pre_p, gimple_seq *post_p,
 
 	/* If the target is volatile, we have non-zero elements and more than
 	   one field to assign, initialize the target from a temporary.  */
-	if (TREE_THIS_VOLATILE (object)
+	if ((TREE_THIS_VOLATILE (object))
 	    && !TREE_ADDRESSABLE (type)
 	    && num_nonzero_elements > 0
 	    && vec_safe_length (elts) > 1)

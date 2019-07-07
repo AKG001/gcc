@@ -370,6 +370,7 @@ copy_var_decl (tree var, tree name, tree type)
 
   TREE_ADDRESSABLE (copy) = TREE_ADDRESSABLE (var);
   TREE_THIS_VOLATILE (copy) = TREE_THIS_VOLATILE (var);
+  TREE_THIS_DEPENDENT_PTR (copy) = TREE_THIS_DEPENDENT_PTR (var);
   DECL_GIMPLE_REG_P (copy) = DECL_GIMPLE_REG_P (var);
   DECL_ARTIFICIAL (copy) = DECL_ARTIFICIAL (var);
   DECL_IGNORED_P (copy) = DECL_IGNORED_P (var);
@@ -748,7 +749,7 @@ is_gimple_reg (tree t)
 
   /* A volatile decl is not acceptable because we can't reuse it as
      needed.  We need to copy it into a temp first.  */
-  if (TREE_THIS_VOLATILE (t))
+  if (TREE_THIS_VOLATILE (t) || TREE_THIS_DEPENDENT_PTR (t))
     return false;
 
   /* We define "registers" as things that can be renamed as needed,

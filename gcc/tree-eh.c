@@ -2682,7 +2682,7 @@ tree_could_trap_p (tree expr)
       return !TREE_THIS_NOTRAP (expr);
 
     case ASM_EXPR:
-      return TREE_THIS_VOLATILE (expr);
+      return (TREE_THIS_VOLATILE (expr));
 
     case CALL_EXPR:
       t = get_callee_fndecl (expr);

@@ -34,6 +34,9 @@ along with GCC; see the file COPYING3.  If not see
 /* In a RECORD_TYPE or UNION_TYPE, nonzero if any component is volatile.  */
 #define C_TYPE_FIELDS_VOLATILE(TYPE) TREE_LANG_FLAG_2 (TYPE)
 
+/* In a RECORD_TYPE or UNION_TYPE, nonzero if any component is depedent pointer.  */
+#define C_TYPE_FIELDS_DEPENDENT_PTR(TYPE) TREE_LANG_FLAG_3 (TYPE)
+
 /* In a RECORD_TYPE or UNION_TYPE or ENUMERAL_TYPE
    nonzero if the definition of the type has already started.  */
 #define C_TYPE_BEING_DEFINED(TYPE) TYPE_LANG_FLAG_0 (TYPE)

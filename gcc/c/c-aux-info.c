@@ -476,7 +476,9 @@ gen_decl (tree decl, int is_func_definition, formals_style style)
 
   if (TREE_THIS_VOLATILE (decl))
     ret_val = concat ("volatile ", ret_val, NULL);
-  if (TREE_READONLY (decl))
+  if (TREE_THIS_DEPENDENT_PTR (decl))
+    ret_val = concat ("dependent_ptr ", ret_val, NULL);
+   if (TREE_READONLY (decl))
     ret_val = concat ("const ", ret_val, NULL);
 
   data_type = "";

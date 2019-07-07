@@ -513,6 +513,8 @@ omp_build_component_ref (tree obj, tree field)
     TREE_THIS_VOLATILE (ret) |= 1;
   if (TREE_READONLY (field))
     TREE_READONLY (ret) |= 1;
+  if (TREE_THIS_DEPENDENT_PTR (field))
+    TREE_THIS_DEPENDENT_PTR (ret) |= 1;
   return ret;
 }
 

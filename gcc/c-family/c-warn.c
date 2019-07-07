@@ -658,7 +658,7 @@ warn_if_unused_value (const_tree exp, location_t locus)
     default:
       /* Referencing a volatile value is a side effect, so don't warn.  */
       if ((DECL_P (exp) || REFERENCE_CLASS_P (exp))
-	  && TREE_THIS_VOLATILE (exp))
+	  && (TREE_THIS_VOLATILE (exp) || TREE_THIS_DEPENDENT_PTR(exp)))
 	return false;
 
       /* If this is an expression which has no operands, there is no value

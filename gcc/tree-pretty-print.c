@@ -1612,6 +1612,8 @@ dump_generic_node (pretty_printer *pp, tree node, int spc, dump_flags_t flags,
 	    pp_string (pp, " const");
 	  if (quals & TYPE_QUAL_VOLATILE)
 	    pp_string (pp, " volatile");
+	  if (quals & TYPE_QUAL_DEPENDENT_PTR)
+	    pp_string (pp, " dependent_ptr");
 	  if (quals & TYPE_QUAL_RESTRICT)
 	    pp_string (pp, " restrict");
 

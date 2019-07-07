@@ -571,7 +571,7 @@ objects_must_conflict_p (tree t1, tree t2)
       return 1;
     }
   /* Likewise if both are volatile.  */
-  if (t1 != 0 && TYPE_VOLATILE (t1) && t2 != 0 && TYPE_VOLATILE (t2))
+  if (t1 != 0 && (TYPE_VOLATILE (t1) || TYPE_DEPENDENT_PTR (t1)) && t2 != 0 && (TYPE_VOLATILE (t2) || TYPE_DEPENDENT_PTR (t2)))
     {
       ++alias_stats.num_volatile;
       return 1;

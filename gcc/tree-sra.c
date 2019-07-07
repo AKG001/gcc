@@ -792,6 +792,12 @@ type_internals_preclude_sra_p (tree type, const char **msg)
 	  return true;
 	}
 
+      if (TYPE_DEPENDENT_PTR (et))
+	{
+	  *msg = "element type is dependent_ptr";
+	  return true;
+	}
+
       if (AGGREGATE_TYPE_P (et) && type_internals_preclude_sra_p (et, msg))
 	return true;
 
@@ -4312,6 +4318,7 @@ find_param_candidates (void)
 
 	  if (TREE_CODE (type) == FUNCTION_TYPE
 	      || TYPE_VOLATILE (type)
+	      || TYPE_DEPENDENT_PTR (type)
 	      || (TREE_CODE (type) == ARRAY_TYPE
 		  && TYPE_NONALIASED_COMPONENT (type))
 	      || !is_gimple_reg (parm)

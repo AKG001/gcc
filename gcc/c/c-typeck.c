@@ -1636,10 +1636,10 @@ function_types_compatible_p (const_tree f1, const_tree f2,
      the function is noreturn.  */
   if (TYPE_VOLATILE (ret1) != TYPE_VOLATILE (ret2))
     pedwarn (input_location, 0, "function return types not compatible due to %<volatile%>");
-  if (TYPE_VOLATILE (ret1))
+  if (TYPE_VOLATILE (ret1) || TYPE_DEPENDENT_PTR (ret1))
     ret1 = build_qualified_type (TYPE_MAIN_VARIANT (ret1),
 				 TYPE_QUALS (ret1) & ~TYPE_QUAL_VOLATILE);
-  if (TYPE_VOLATILE (ret2))
+  if (TYPE_VOLATILE (ret2) || TYPE_DEPENDENT_PTR (ret2))
     ret2 = build_qualified_type (TYPE_MAIN_VARIANT (ret2),
 				 TYPE_QUALS (ret2) & ~TYPE_QUAL_VOLATILE);
   val = comptypes_internal (ret1, ret2, enum_and_int_p, different_types_p);
@@ -2572,7 +2572,7 @@ build_indirect_ref (location_t loc, tree ptr, ref_operator errstring)
 	     to change it via some other pointer.  */
 	  TREE_READONLY (ref) = TYPE_READONLY (t);
 	  TREE_SIDE_EFFECTS (ref)
-	    = TYPE_VOLATILE (t) || TREE_SIDE_EFFECTS (pointer);
+	    = (TYPE_VOLATILE (t) || TYPE_DEPENDENT_PTR (t) || TREE_SIDE_EFFECTS (pointer));
 	  TREE_THIS_VOLATILE (ref) = TYPE_VOLATILE (t);
 	  protected_set_expr_location (ref, loc);
 	  return ref;
@@ -2702,14 +2702,15 @@ build_array_ref (location_t loc, tree array, tree index)
 	    | TREE_READONLY (array));
       TREE_SIDE_EFFECTS (rval)
 	|= (TYPE_VOLATILE (TREE_TYPE (TREE_TYPE (array)))
+	    | TYPE_DEPENDENT_PTR (TREE_TYPE (TREE_TYPE (array)))
 	    | TREE_SIDE_EFFECTS (array));
       TREE_THIS_VOLATILE (rval)
-	|= (TYPE_VOLATILE (TREE_TYPE (TREE_TYPE (array)))
+	|= (TYPE_VOLATILE (TREE_TYPE (TREE_TYPE (array)))  
 	    /* This was added by rms on 16 Nov 91.
 	       It fixes  vol struct foo *a;  a->elts[1]
 	       in an inline function.
 	       Hope it doesn't break something else.  */
-	    | TREE_THIS_VOLATILE (array));
+	    | (TREE_THIS_VOLATILE (array)));
       ret = require_complete_type (loc, rval);
       protected_set_expr_location (ret, loc);
       if (non_lvalue)
@@ -4749,6 +4750,8 @@ build_unary_op (location_t location, enum tree_code code, tree xarg,
 	    quals |= TYPE_QUAL_CONST;
 	  if (TREE_THIS_VOLATILE (arg))
 	    quals |= TYPE_QUAL_VOLATILE;
+	  if (TREE_THIS_DEPENDENT_PTR (arg))
+	    quals |= TYPE_QUAL_DEPENDENT_PTR;
 
 	  argtype = c_build_qualified_type (argtype, quals);
 	}
@@ -5388,7 +5391,7 @@ build_conditional_expr (location_t colon_loc, tree ifexp, bool ifexp_bcp,
   result_type
     = build_type_variant (result_type,
 			  TYPE_READONLY (type1) || TYPE_READONLY (type2),
-			  TYPE_VOLATILE (type1) || TYPE_VOLATILE (type2));
+			  TYPE_VOLATILE (type1) || TYPE_DEPENDENT_PTR (type1) || TYPE_VOLATILE (type2) || TYPE_DEPENDENT_PTR (type2));
 
   op1 = ep_convert_and_check (colon_loc, result_type, op1,
 			      semantic_result_type);

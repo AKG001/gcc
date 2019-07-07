@@ -533,7 +533,7 @@ add_stmt_operand (struct function *fn, tree *var_p, gimple *stmt, int flags)
     {
       /* Mark statements with volatile operands.  */
       if (!(flags & opf_no_vops)
-	  && TREE_THIS_VOLATILE (var))
+	  && (TREE_THIS_VOLATILE (var) || TREE_THIS_DEPENDENT_PTR (var)))
 	gimple_set_has_volatile_ops (stmt, true);
 
       /* The variable is a memory access.  Add virtual operands.  */

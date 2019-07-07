@@ -1628,7 +1628,7 @@ dbxout_type_method_1 (tree decl)
 	 D for `const volatile' member functions.  */
       if (TYPE_READONLY (TREE_TYPE (firstarg)))
 	c1 += 1;
-      if (TYPE_VOLATILE (TREE_TYPE (firstarg)))
+      if (TYPE_VOLATILE (TREE_TYPE (firstarg)) || TYPE_DEPENDENT_PTR (TREE_TYPE (firstarg)))
 	c1 += 2;
 
       if (DECL_VINDEX (decl))
@@ -1929,7 +1929,7 @@ dbxout_type (tree type, int full)
   if (TYPE_READONLY (type) > TYPE_READONLY (main_variant))
     {
       stabstr_C ('k');
-      dbxout_type (build_type_variant (type, 0, TYPE_VOLATILE (type)), 0);
+      dbxout_type (build_type_variant (type, 0, (TYPE_VOLATILE (type) || TYPE_DEPENDENT_PTR (type))), 0);
       return;
     }
   else if (TYPE_VOLATILE (type) > TYPE_VOLATILE (main_variant))

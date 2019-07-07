@@ -3547,6 +3547,11 @@ c_apply_type_quals_to_decl (int type_quals, tree decl)
       TREE_SIDE_EFFECTS (decl) = 1;
       TREE_THIS_VOLATILE (decl) = 1;
     }
+  if (type_quals & TYPE_QUAL_DEPENDENT_PTR)
+    {
+      TREE_SIDE_EFFECTS (decl) = 1;
+      TREE_THIS_DEPENDENT_PTR (decl) = 1;
+    }
   if (type_quals & TYPE_QUAL_RESTRICT)
     {
       while (type && TREE_CODE (type) == ARRAY_TYPE)

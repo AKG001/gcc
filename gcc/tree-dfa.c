@@ -150,6 +150,9 @@ dump_variable (FILE *file, tree var)
   if (TREE_THIS_VOLATILE (var))
     fprintf (file, ", is volatile");
 
+  if (TREE_THIS_DEPENDENT_PTR (var))
+    fprintf (file, ", is dependent_ptr");
+
   if (cfun && ssa_default_def (cfun, var))
     {
       fprintf (file, ", default def: ");

@@ -5202,6 +5202,7 @@ fld_type_variant (tree first, tree t, struct free_lang_data_d *fld,
   TYPE_READONLY (v) = TYPE_READONLY (t);
   TYPE_VOLATILE (v) = TYPE_VOLATILE (t);
   TYPE_ATOMIC (v) = TYPE_ATOMIC (t);
+  TYPE_DEPENDENT_PTR (v) = TYPE_DEPENDENT_PTR (t);
   TYPE_RESTRICT (v) = TYPE_RESTRICT (t);
   TYPE_ADDR_SPACE (v) = TYPE_ADDR_SPACE (t);
   TYPE_NAME (v) = TYPE_NAME (t);
@@ -5476,7 +5477,7 @@ free_lang_data_in_type (tree type, struct free_lang_data_d *fld)
           TREE_VALUE (p) = fld_simplified_type (TREE_VALUE (p), fld);
 	  tree arg_type = TREE_VALUE (p);
 
-	  if (TYPE_READONLY (arg_type) || TYPE_VOLATILE (arg_type))
+	  if (TYPE_READONLY (arg_type) || TYPE_VOLATILE (arg_type) || TYPE_DEPENDENT_PTR (arg_type))
 	    {
 	      int quals = TYPE_QUALS (arg_type)
 			  & ~TYPE_QUAL_CONST

@@ -2573,6 +2573,7 @@ c_parser_static_assert_declaration_no_semi (c_parser *parser)
      volatile
      address-space-qualifier
      _Atomic
+     _Dependent_ptr
 
    (restrict is new in C99.)
    (_Atomic is new in C11.)
