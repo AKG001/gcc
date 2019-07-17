@@ -787,6 +787,9 @@ extern void omp_clause_range_check_failed (const_tree, const char *, int,
    If this bit is set in an expression, so is TREE_SIDE_EFFECTS.  */
 #define TREE_THIS_VOLATILE(NODE) ((NODE)->base.volatile_flag)
 
+/* Nonzero means this expression is having data dependence somewhere.  */
+#define TREE_THIS_DEPENDENT_PTR(NODE) ((NODE)->base.dependent_ptr_flag)
+
 /* Nonzero means this node will not trap.  In an INDIRECT_REF, means
    accessing the memory pointed to won't generate a trap.  However,
    this only applies to an object when used appropriately: it doesn't
@@ -2052,7 +2055,7 @@ extern machine_mode vector_type_mode (const_tree);
 #define TYPE_ATOMIC(NODE) (TYPE_CHECK (NODE)->base.u.bits.atomic_flag)
 
 /* Nonzero in a type considered dependent_ptr as a whole.  */
-#define TYPE_DEPENDENT_PTR(NODE) (TYPE_CHECK (NODE)->base.u.bits.dependent_ptr_flag)
+#define TYPE_DEPENDENT_PTR(NODE) (TYPE_CHECK (NODE)->base.dependent_ptr_flag)
 
 /* Means this type is const-qualified.  */
 #define TYPE_READONLY(NODE) (TYPE_CHECK (NODE)->base.readonly_flag)

@@ -948,6 +948,7 @@ struct GTY(()) tree_base {
   unsigned asm_written_flag: 1;
   unsigned nowarning_flag : 1;
   unsigned visited : 1;
+  unsigned dependent_ptr_flag : 1;
 
   unsigned used_flag : 1;
   unsigned nothrow_flag : 1;
@@ -976,8 +977,7 @@ struct GTY(()) tree_base {
       unsigned user_align : 1;
       unsigned nameless_flag : 1;
       unsigned atomic_flag : 1;
-      unsigned dependent_ptr_flag : 1;
-      unsigned spare0 : 2;
+      unsigned spare0 : 3;
 
       unsigned spare1 : 8;
 
