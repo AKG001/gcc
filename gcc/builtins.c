@@ -6214,7 +6214,7 @@ get_memmodel (tree exp)
   /* Workaround for Bugzilla 59448. GCC doesn't track consume properly, so
      be conservative and promote consume to acquire.  */
   if (val == MEMMODEL_CONSUME)
-    val = MEMMODEL_ACQUIRE;
+    val = MEMMODEL_RELAXED;
 
   return (enum memmodel) val;
 }

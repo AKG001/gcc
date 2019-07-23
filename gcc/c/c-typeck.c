@@ -1838,7 +1838,7 @@ decl_constant_value_1 (tree decl, bool in_init)
 {
   if (/* Note that DECL_INITIAL isn't valid for a PARM_DECL.  */
       TREE_CODE (decl) != PARM_DECL
-      && !TREE_THIS_VOLATILE (decl)
+      && !(TREE_THIS_VOLATILE (decl) || TREE_THIS_DEPENDENT_PTR (decl))
       && TREE_READONLY (decl)
       && DECL_INITIAL (decl) != NULL_TREE
       && !error_operand_p (DECL_INITIAL (decl))
@@ -2474,9 +2474,9 @@ build_component_ref (location_t loc, tree datum, tree component,
 	  if (TREE_READONLY (subdatum)
 	      || (use_datum_quals && TREE_READONLY (datum)))
 	    TREE_READONLY (ref) = 1;
-	  if (TREE_THIS_VOLATILE (subdatum)
+	  if (TREE_THIS_VOLATILE (subdatum) || TREE_THIS_DEPENDENT_PTR (subdatum)
 	      || (use_datum_quals && TREE_THIS_VOLATILE (datum)))
-	    TREE_THIS_VOLATILE (ref) = 1;
+	    TREE_THIS_VOLATILE (ref) = TREE_THIS_DEPENDENT_PTR (ref) = 1;
 
 	  if (TREE_DEPRECATED (subdatum))
 	    warn_deprecated_use (subdatum, NULL_TREE);
@@ -2574,6 +2574,7 @@ build_indirect_ref (location_t loc, tree ptr, ref_operator errstring)
 	  TREE_SIDE_EFFECTS (ref)
 	    = (TYPE_VOLATILE (t) || TYPE_DEPENDENT_PTR (t) || TREE_SIDE_EFFECTS (pointer));
 	  TREE_THIS_VOLATILE (ref) = TYPE_VOLATILE (t);
+	  TREE_THIS_DEPENDENT_PTR (ref) = TYPE_DEPENDENT_PTR (t);
 	  protected_set_expr_location (ref, loc);
 	  return ref;
 	}
@@ -2711,6 +2712,8 @@ build_array_ref (location_t loc, tree array, tree index)
 	       in an inline function.
 	       Hope it doesn't break something else.  */
 	    | (TREE_THIS_VOLATILE (array)));
+      TREE_THIS_DEPENDENT_PTR (rval) |= ((TYPE_DEPENDENT_PTR (TREE_TYPE (TREE_TYPE (array)))) 
+	| TREE_THIS_DEPENDENT_PTR (array));
       ret = require_complete_type (loc, rval);
       protected_set_expr_location (ret, loc);
       if (non_lvalue)
@@ -3074,7 +3077,7 @@ build_function_call_vec (location_t loc, vec<location_t> arg_loc,
       return error_mark_node;
     }
 
-  if (fundecl && TREE_THIS_VOLATILE (fundecl))
+  if (fundecl && (TREE_THIS_VOLATILE (fundecl) || TREE_THIS_DEPENDENT_PTR (fundecl)))
     current_function_returns_abnormally = 1;
 
   /* fntype now gets the type of function pointed to.  */
@@ -4740,7 +4743,7 @@ build_unary_op (location_t location, enum tree_code code, tree xarg,
 	 to which the address will point.  This is only needed
 	 for function types.  */
       if ((DECL_P (arg) || REFERENCE_CLASS_P (arg))
-	  && (TREE_READONLY (arg) || TREE_THIS_VOLATILE (arg))
+	  && (TREE_READONLY (arg) || TREE_THIS_VOLATILE (arg) || TREE_THIS_DEPENDENT_PTR (arg))
 	  && TREE_CODE (argtype) == FUNCTION_TYPE)
 	{
 	  int orig_quals = TYPE_QUALS (strip_array_types (argtype));
@@ -10510,7 +10513,7 @@ c_finish_return (location_t loc, tree retval, tree origtype)
      in a function returning void.  */
   location_t xloc = expansion_point_location_if_in_system_header (loc);
 
-  if (TREE_THIS_VOLATILE (current_function_decl))
+  if (TREE_THIS_VOLATILE (current_function_decl) || TREE_THIS_DEPENDENT_PTR (current_function_decl))
     warning_at (xloc, 0,
 		"function declared %<noreturn%> has a %<return%> statement");
 

@@ -4418,7 +4418,7 @@ simple_operand_p (const_tree exp)
   	  || TREE_CODE (exp) == SSA_NAME
 	  || (DECL_P (exp)
 	      && ! TREE_ADDRESSABLE (exp)
-	      && ! TREE_THIS_VOLATILE (exp)
+	      && ! (TREE_THIS_VOLATILE (exp) || TREE_THIS_DEPENDENT_PTR (exp))
 	      && ! DECL_NONLOCAL (exp)
 	      /* Don't regard global variables as simple.  They may be
 		 allocated in ways unknown to the compiler (shared memory,

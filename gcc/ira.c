@@ -3047,7 +3047,7 @@ equiv_init_varies_p (rtx x)
       return reg_equiv[REGNO (x)].replace == 0 && rtx_varies_p (x, 0);
 
     case ASM_OPERANDS:
-      if (MEM_VOLATILE_P (x))
+      if (MEM_VOLATILE_P (x) || MEM_DEPENDENT_PTR_P (x))
 	return 1;
 
       /* Fall through.  */
@@ -3113,7 +3113,7 @@ equiv_init_movable_p (rtx x, int regno)
       return 0;
 
     case ASM_OPERANDS:
-      if (MEM_VOLATILE_P (x))
+      if (MEM_VOLATILE_P (x) || MEM_DEPENDENT_PTR_P (x))
 	return 0;
 
       /* Fall through.  */
@@ -4471,7 +4471,7 @@ rtx_moveable_p (rtx *loc, enum op_type type)
     case ASM_OPERANDS:
       /* The same is true for volatile asm: it has unknown side effects, it
          cannot be moved at will.  */
-      if (MEM_VOLATILE_P (x))
+      if (MEM_VOLATILE_P (x) || MEM_DEPENDENT_PTR_P (x))
 	return false;
 
     default:

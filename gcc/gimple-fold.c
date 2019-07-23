@@ -1235,7 +1235,7 @@ gimple_fold_builtin_memset (gimple_stmt_iterator *gsi, tree c, tree len)
     return false;
 
   var = TREE_OPERAND (var, 0);
-  if (TREE_THIS_VOLATILE (var))
+  if (TREE_THIS_VOLATILE (var) || TREE_THIS_DEPENDENT_PTR (var))
     return false;
 
   etype = TREE_TYPE (var);
@@ -4071,6 +4071,7 @@ optimize_atomic_compare_exchange_p (gimple *stmt)
   if (!is_gimple_reg_type (etype)
       || !auto_var_in_fn_p (TREE_OPERAND (expected, 0), current_function_decl)
       || TREE_THIS_VOLATILE (etype)
+      || TREE_THIS_DEPENDENT_PTR (etype)
       || VECTOR_TYPE_P (etype)
       || TREE_CODE (etype) == COMPLEX_TYPE
       /* Don't optimize floating point expected vars, VIEW_CONVERT_EXPRs
@@ -4784,7 +4785,8 @@ maybe_canonicalize_mem_ref_addr (tree *t)
       tree decl = TREE_OPERAND (TREE_OPERAND (*t, 0), 0);
       tree alias_type = TREE_TYPE (TREE_OPERAND (*t, 1));
       if (/* Same volatile qualification.  */
-	  TREE_THIS_VOLATILE (*t) == TREE_THIS_VOLATILE (decl)
+	  (TREE_THIS_VOLATILE (*t) == TREE_THIS_VOLATILE (decl)
+	  || TREE_THIS_DEPENDENT_PTR (*t) == TREE_THIS_DEPENDENT_PTR (decl))
 	  /* Same TBAA behavior with -fstrict-aliasing.  */
 	  && !TYPE_REF_CAN_ALIAS_ALL (alias_type)
 	  && (TYPE_MAIN_VARIANT (TREE_TYPE (decl))
@@ -6952,7 +6954,7 @@ fold_const_aggregate_ref_1 (tree t, tree (*valueize) (tree))
   tree tem;
   bool reverse;
 
-  if (TREE_THIS_VOLATILE (t))
+  if (TREE_THIS_VOLATILE (t) || TREE_THIS_DEPENDENT_PTR (t))
     return NULL_TREE;
 
   if (DECL_P (t))

@@ -1397,7 +1397,7 @@ split_function (basic_block return_bb, struct split_point *split_point,
   cur_node->remove_callees ();
   cur_node->remove_all_references ();
   if (!split_part_return_p)
-    TREE_THIS_VOLATILE (node->decl) = 1;
+    TREE_THIS_VOLATILE (node->decl) = TREE_THIS_DEPENDENT_PTR (node->decl) = 1;
   if (dump_file)
     dump_function_to_file (node->decl, dump_file, dump_flags);
 

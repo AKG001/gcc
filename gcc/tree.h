@@ -1127,7 +1127,7 @@ extern void omp_clause_range_check_failed (const_tree, const char *, int,
    In particular the volatile flag causes us to not prematurely remove
    such clobber instructions.  */
 #define TREE_CLOBBER_P(NODE) \
-  (TREE_CODE (NODE) == CONSTRUCTOR && TREE_THIS_VOLATILE (NODE))
+  (TREE_CODE (NODE) == CONSTRUCTOR && (TREE_THIS_VOLATILE (NODE) || TREE_THIS_DEPENDENT_PTR (NODE)))
 
 /* Define fields and accessors for some nodes that represent expressions.  */
 

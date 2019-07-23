@@ -13077,9 +13077,7 @@ decl_quals (const_tree decl)
 	   && TREE_CODE (TREE_TYPE (decl)) != REFERENCE_TYPE
 	   ? TYPE_QUAL_CONST : TYPE_UNQUALIFIED)
 	  | (TREE_THIS_VOLATILE (decl)
-	     ? TYPE_QUAL_VOLATILE : TYPE_UNQUALIFIED)
-	  | (TREE_THIS_DEPENDENT_PTR (decl)
-	     ? TYPE_QUAL_DEPENDENT_PTR : TYPE_UNQUALIFIED));
+	     ? TYPE_QUAL_VOLATILE : TYPE_UNQUALIFIED));
 }
 
 /* Determine the TYPE whose qualifiers match the largest strict subset

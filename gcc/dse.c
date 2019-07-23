@@ -1397,7 +1397,7 @@ record_store (rtx body, bb_info_t bb_info)
     }
 
   /* We can still process a volatile mem, we just cannot delete it.  */
-  if (MEM_VOLATILE_P (mem))
+  if (MEM_VOLATILE_P (mem) || MEM_DEPENDENT_PTR_P (mem))
     insn_info->cannot_delete = true;
 
   if (!canon_address (mem, &group_id, &offset, &base))
@@ -1464,7 +1464,7 @@ record_store (rtx body, bb_info_t bb_info)
       && (REG_P (SET_SRC (body))
 	  || GET_CODE (SET_SRC (body)) == SUBREG
 	  || CONSTANT_P (SET_SRC (body)))
-      && !MEM_VOLATILE_P (mem)
+      && !(MEM_VOLATILE_P (mem) || MEM_DEPENDENT_PTR_P (mem))
       /* Sometimes the store and reload is used for truncation and
 	 rounding.  */
       && !(FLOAT_MODE_P (GET_MODE (mem)) && (flag_float_store)))
@@ -2072,13 +2072,13 @@ check_mem_read_rtx (rtx *loc, bb_info_t bb_info)
   insn_info = bb_info->last_insn;
 
   if ((MEM_ALIAS_SET (mem) == ALIAS_SET_MEMORY_BARRIER)
-      || MEM_VOLATILE_P (mem))
+      || MEM_VOLATILE_P (mem) || MEM_DEPENDENT_PTR_P (mem))
     {
       if (crtl->stack_protect_guard
 	  && (MEM_EXPR (mem) == crtl->stack_protect_guard
 	      || (crtl->stack_protect_guard_decl
 		  && MEM_EXPR (mem) == crtl->stack_protect_guard_decl))
-	  && MEM_VOLATILE_P (mem))
+	  && (MEM_VOLATILE_P (mem) || MEM_DEPENDENT_PTR_P (mem)))
 	{
 	  /* This is either the stack protector canary on the stack,
 	     which ought to be written by a MEM_VOLATILE_P store and

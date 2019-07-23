@@ -6672,7 +6672,7 @@ find_equiv_reg (rtx goal, rtx_insn *insn, enum reg_class rclass, int other,
   else if (MEM_P (goal))
     {
       enum rtx_code code = GET_CODE (XEXP (goal, 0));
-      if (MEM_VOLATILE_P (goal))
+      if (MEM_VOLATILE_P (goal) || MEM_DEPENDENT_PTR_P (goal))
 	return 0;
       if (flag_float_store && SCALAR_FLOAT_MODE_P (GET_MODE (goal)))
 	return 0;

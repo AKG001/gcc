@@ -2027,7 +2027,8 @@ can_combine_p (rtx_insn *insn, rtx_insn *i3, rtx_insn *pred ATTRIBUTE_UNUSED,
 	  && (((!MEM_P (src)
 		|| ! find_reg_note (insn, REG_EQUIV, src))
 	       && modified_between_p (src, insn, i3))
-	      || (GET_CODE (src) == ASM_OPERANDS && MEM_VOLATILE_P (src))
+	      || (GET_CODE (src) == ASM_OPERANDS && (MEM_VOLATILE_P (src) || MEM_DEPENDENT_PTR_P (src)))
+	      || (MEM_P (src) && MEM_DEPENDENT_PTR_P (src))
 	      || GET_CODE (src) == UNSPEC_VOLATILE))
       /* Don't combine across a CALL_INSN, because that would possibly
 	 change whether the life span of some REGs crosses calls or not,
@@ -6017,7 +6018,7 @@ combine_simplify_rtx (rtx x, machine_mode op0_mode, int in_dest,
       /* Don't change the mode of the MEM if that would change the meaning
 	 of the address.  */
       if (MEM_P (SUBREG_REG (x))
-	  && (MEM_VOLATILE_P (SUBREG_REG (x))
+	  && (MEM_VOLATILE_P (SUBREG_REG (x)) || MEM_DEPENDENT_PTR_P (SUBREG_REG (x))
 	      || mode_dependent_address_p (XEXP (SUBREG_REG (x), 0),
 					   MEM_ADDR_SPACE (SUBREG_REG (x)))))
 	return gen_rtx_CLOBBER (mode, const0_rtx);
@@ -7707,7 +7708,7 @@ make_extraction (machine_mode mode, rtx inner, HOST_WIDE_INT pos,
 	      && (inner_mode == tmode
 		  || (! mode_dependent_address_p (XEXP (inner, 0),
 						  MEM_ADDR_SPACE (inner))
-		      && ! MEM_VOLATILE_P (inner))))))
+		      && ! (MEM_VOLATILE_P (inner) || MEM_DEPENDENT_PTR_P (inner)))))))
     {
       /* If INNER is a MEM, make a new MEM that encompasses just the desired
 	 field.  If the original and current mode are the same, we need not
@@ -7899,7 +7900,7 @@ make_extraction (machine_mode mode, rtx inner, HOST_WIDE_INT pos,
       && partial_subreg_p (wanted_inner_mode, is_mode)
       && MEM_P (inner)
       && ! mode_dependent_address_p (XEXP (inner, 0), MEM_ADDR_SPACE (inner))
-      && ! MEM_VOLATILE_P (inner))
+      && ! (MEM_VOLATILE_P (inner) || MEM_DEPENDENT_PTR_P (inner)))
     {
       poly_int64 offset = 0;
 
@@ -10753,7 +10754,7 @@ simplify_shift_const_1 (enum rtx_code code, machine_mode result_mode,
 	  if ((code == ASHIFTRT || code == LSHIFTRT)
 	      && ! mode_dependent_address_p (XEXP (varop, 0),
 					     MEM_ADDR_SPACE (varop))
-	      && ! MEM_VOLATILE_P (varop)
+	      && ! (MEM_VOLATILE_P (varop) || MEM_DEPENDENT_PTR_P (varop))
 	      && (int_mode_for_size (GET_MODE_BITSIZE (int_mode) - count, 1)
 		  .exists (&tmode)))
 	    {
@@ -11804,7 +11805,7 @@ gen_lowpart_for_combine (machine_mode omode, rtx x)
     {
       /* Refuse to work on a volatile memory ref or one with a mode-dependent
 	 address.  */
-      if (MEM_VOLATILE_P (x)
+      if (MEM_VOLATILE_P (x) || MEM_DEPENDENT_PTR_P (x)
 	  || mode_dependent_address_p (XEXP (x, 0), MEM_ADDR_SPACE (x)))
 	goto fail;
 

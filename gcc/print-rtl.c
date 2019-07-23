@@ -830,6 +830,9 @@ rtx_writer::print_rtx (const_rtx in_rtx)
       if (RTX_FLAG (in_rtx, volatil))
 	fputs ("/v", m_outfile);
 
+      if (RTX_FLAG (in_rtx, dependent_ptr))
+	fputs ("/d", m_outfile);
+
       if (RTX_FLAG (in_rtx, unchanging))
 	fputs ("/u", m_outfile);
 

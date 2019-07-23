@@ -9298,7 +9298,7 @@ pass_warn_function_return::execute (function *fun)
     return 0;
 
   /* If we have a path to EXIT, then we do return.  */
-  if (TREE_THIS_VOLATILE (fun->decl)
+  if ((TREE_THIS_VOLATILE (fun->decl) || TREE_THIS_DEPENDENT_PTR (fun->decl))
       && EDGE_COUNT (EXIT_BLOCK_PTR_FOR_FN (fun)->preds) > 0)
     {
       location = UNKNOWN_LOCATION;

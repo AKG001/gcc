@@ -1086,6 +1086,9 @@ c_parser_gimple_unary_expression (gimple_parser &parser)
 	TREE_SIDE_EFFECTS (ret.value)
 	  = TREE_THIS_VOLATILE (ret.value)
 	  = TYPE_VOLATILE (TREE_TYPE (TREE_TYPE (op.value)));
+	TREE_SIDE_EFFECTS (ret.value)
+	  = TREE_THIS_DEPENDENT_PTR (ret.value)
+	  = TYPE_DEPENDENT_PTR (TREE_TYPE (TREE_TYPE (op.value)));
 	ret.src_range.m_start = op_loc;
 	ret.src_range.m_finish = finish;
 	return ret;
@@ -2328,7 +2331,7 @@ c_finish_gimple_return (location_t loc, tree retval)
      in a function returning void.  */
   location_t xloc = expansion_point_location_if_in_system_header (loc);
 
-  if (TREE_THIS_VOLATILE (current_function_decl))
+  if (TREE_THIS_VOLATILE (current_function_decl) || TREE_THIS_DEPENDENT_PTR (current_function_decl))
     warning_at (xloc, 0,
 		"function declared %<noreturn%> has a %<return%> statement");
 

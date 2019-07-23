@@ -269,6 +269,7 @@ c_fully_fold_internal (tree expr, bool in_init, bool *maybe_const_operands,
 	{
 	  TREE_READONLY (ret) = TREE_READONLY (expr);
 	  TREE_THIS_VOLATILE (ret) = TREE_THIS_VOLATILE (expr);
+	  TREE_THIS_DEPENDENT_PTR (ret) = TREE_THIS_DEPENDENT_PTR (expr);
 	}
       if (!lval)
 	ret = fold (ret);
@@ -300,6 +301,7 @@ c_fully_fold_internal (tree expr, bool in_init, bool *maybe_const_operands,
 	  TREE_READONLY (ret) = TREE_READONLY (expr);
 	  TREE_SIDE_EFFECTS (ret) = TREE_SIDE_EFFECTS (expr);
 	  TREE_THIS_VOLATILE (ret) = TREE_THIS_VOLATILE (expr);
+	  TREE_THIS_DEPENDENT_PTR (ret) = TREE_THIS_DEPENDENT_PTR (expr);
 	}
       if (!lval)
 	ret = fold (ret);
@@ -487,6 +489,7 @@ c_fully_fold_internal (tree expr, bool in_init, bool *maybe_const_operands,
 	  TREE_READONLY (ret) = TREE_READONLY (expr);
 	  TREE_SIDE_EFFECTS (ret) = TREE_SIDE_EFFECTS (expr);
 	  TREE_THIS_VOLATILE (ret) = TREE_THIS_VOLATILE (expr);
+	  TREE_THIS_DEPENDENT_PTR (ret) = TREE_THIS_DEPENDENT_PTR (expr);
 	}
       switch (code)
 	{

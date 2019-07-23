@@ -230,7 +230,7 @@ is_improper (symtab_node *n, void *v ATTRIBUTE_UNUSED)
 
   /* Do not want to do anything with volatile except mark any
      function that uses one to be not const or pure.  */
-  if (TREE_THIS_VOLATILE (t))
+  if (TREE_THIS_VOLATILE (t) || TREE_THIS_DEPENDENT_PTR (t))
     return true;
 
   /* We do not need to analyze readonly vars, we already know they do not

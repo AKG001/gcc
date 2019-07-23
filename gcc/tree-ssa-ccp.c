@@ -2086,7 +2086,7 @@ insert_clobber_before_stack_restore (tree saved_val, tree var,
       {
 	clobber = build_constructor (TREE_TYPE (var),
 				     NULL);
-	TREE_THIS_VOLATILE (clobber) = 1;
+	TREE_THIS_VOLATILE (clobber) = TREE_THIS_DEPENDENT_PTR (clobber) = 1;
 	clobber_stmt = gimple_build_assign (var, clobber);
 
 	i = gsi_for_stmt (stmt);

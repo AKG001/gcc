@@ -1947,7 +1947,8 @@ set_mem_attributes_minus_bitpos (rtx ref, tree t, int objectp,
      front-end routine) and use it.  */
   attrs.alias = get_alias_set (t);
 
-  MEM_VOLATILE_P (ref) |= (TYPE_VOLATILE (type) || TYPE_DEPENDENT_PTR (type));
+  MEM_VOLATILE_P (ref) |= TYPE_VOLATILE (type);
+  MEM_DEPENDENT_PTR_P (ref) |= TYPE_DEPENDENT_PTR (type);
   MEM_POINTER (ref) = POINTER_TYPE_P (type);
 
   /* Default values from pre-existing memory attributes if present.  */
@@ -2007,6 +2008,9 @@ set_mem_attributes_minus_bitpos (rtx ref, tree t, int objectp,
 
       if (TREE_THIS_VOLATILE (t))
 	MEM_VOLATILE_P (ref) = 1;
+
+      if (TREE_THIS_DEPENDENT_PTR (t))
+	MEM_DEPENDENT_PTR_P (ref) = 1;
 
       /* Now remove any conversions: they don't change what the underlying
 	 object is.  Likewise for SAVE_EXPR.  */

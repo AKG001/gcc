@@ -817,11 +817,13 @@ forward_propagate_addr_expr_1 (tree name, tree def_rhs,
 	  *def_rhs_basep = build2 (MEM_REF, TREE_TYPE (*def_rhs_basep),
 				   new_base, new_offset);
 	  TREE_THIS_VOLATILE (*def_rhs_basep) = TREE_THIS_VOLATILE (lhs);
+	  TREE_THIS_DEPENDENT_PTR (*def_rhs_basep) = TREE_THIS_DEPENDENT_PTR (lhs);
 	  TREE_SIDE_EFFECTS (*def_rhs_basep) = TREE_SIDE_EFFECTS (lhs);
 	  TREE_THIS_NOTRAP (*def_rhs_basep) = TREE_THIS_NOTRAP (lhs);
 	  new_lhs = unshare_expr (TREE_OPERAND (def_rhs, 0));
 	  *lhsp = new_lhs;
 	  TREE_THIS_VOLATILE (new_lhs) = TREE_THIS_VOLATILE (lhs);
+	  TREE_THIS_DEPENDENT_PTR (new_lhs) = TREE_THIS_DEPENDENT_PTR (lhs);
 	  TREE_SIDE_EFFECTS (new_lhs) = TREE_SIDE_EFFECTS (lhs);
 	  *def_rhs_basep = saved;
 	  tidy_after_forward_propagate_addr (use_stmt);
@@ -903,11 +905,13 @@ forward_propagate_addr_expr_1 (tree name, tree def_rhs,
 	  *def_rhs_basep = build2 (MEM_REF, TREE_TYPE (*def_rhs_basep),
 				   new_base, new_offset);
 	  TREE_THIS_VOLATILE (*def_rhs_basep) = TREE_THIS_VOLATILE (rhs);
+	  TREE_THIS_DEPENDENT_PTR (*def_rhs_basep) = TREE_THIS_DEPENDENT_PTR (rhs);
 	  TREE_SIDE_EFFECTS (*def_rhs_basep) = TREE_SIDE_EFFECTS (rhs);
 	  TREE_THIS_NOTRAP (*def_rhs_basep) = TREE_THIS_NOTRAP (rhs);
 	  new_rhs = unshare_expr (TREE_OPERAND (def_rhs, 0));
 	  *rhsp = new_rhs;
 	  TREE_THIS_VOLATILE (new_rhs) = TREE_THIS_VOLATILE (rhs);
+	  TREE_THIS_DEPENDENT_PTR (new_rhs) = TREE_THIS_DEPENDENT_PTR (rhs);
 	  TREE_SIDE_EFFECTS (new_rhs) = TREE_SIDE_EFFECTS (rhs);
 	  *def_rhs_basep = saved;
 	  fold_stmt_inplace (use_stmt_gsi);

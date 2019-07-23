@@ -1345,6 +1345,7 @@ gimplify_bind_expr (tree *expr_p, gimple_seq *pre_p)
       if ((TREE_CODE (TREE_TYPE (t)) == COMPLEX_TYPE
 	   || TREE_CODE (TREE_TYPE (t)) == VECTOR_TYPE)
 	  && !TREE_THIS_VOLATILE (t)
+	  && !TREE_THIS_DEPENDENT_PTR (t)
 	  && (VAR_P (t) && !DECL_HARD_REGISTER (t))
 	  && !needs_to_live_in_memory (t))
 	DECL_GIMPLE_REG_P (t) = 1;
@@ -4677,6 +4678,7 @@ gimplify_compound_literal_expr (tree *expr_p, gimple_seq *pre_p,
      use the decl we already have.  */
   else if (!TREE_ADDRESSABLE (decl)
 	   && !TREE_THIS_VOLATILE (decl)
+	   && !TREE_THIS_DEPENDENT_PTR (decl)
 	   && init
 	   && (fallback & fb_lvalue) == 0
 	   && gimple_test_f (init))
@@ -4691,6 +4693,7 @@ gimplify_compound_literal_expr (tree *expr_p, gimple_seq *pre_p,
   if ((TREE_CODE (TREE_TYPE (decl)) == COMPLEX_TYPE
        || TREE_CODE (TREE_TYPE (decl)) == VECTOR_TYPE)
       && !TREE_THIS_VOLATILE (decl)
+      && !TREE_THIS_DEPENDENT_PTR (decl)
       && !needs_to_live_in_memory (decl))
     DECL_GIMPLE_REG_P (decl) = 1;
 
@@ -4963,7 +4966,7 @@ gimplify_init_constructor (tree *expr_p, gimple_seq *pre_p, gimple_seq *post_p,
 
 	/* If the target is volatile, we have non-zero elements and more than
 	   one field to assign, initialize the target from a temporary.  */
-	if ((TREE_THIS_VOLATILE (object))
+	if ((TREE_THIS_VOLATILE (object) || TREE_THIS_DEPENDENT_PTR (object))
 	    && !TREE_ADDRESSABLE (type)
 	    && num_nonzero_elements > 0
 	    && vec_safe_length (elts) > 1)
@@ -5181,7 +5184,9 @@ gimplify_modify_expr_rhs (tree *expr_p, tree *from_p, tree *to_p,
 	  if (DECL_INITIAL (*from_p)
 	      && TREE_READONLY (*from_p)
 	      && !TREE_THIS_VOLATILE (*from_p)
+	      && !TREE_THIS_DEPENDENT_PTR (*from_p)
 	      && !TREE_THIS_VOLATILE (*to_p)
+	      && !TREE_THIS_DEPENDENT_PTR (*to_p)
 	      && TREE_CODE (DECL_INITIAL (*from_p)) == CONSTRUCTOR)
 	    {
 	      tree old_from = *from_p;
@@ -5775,7 +5780,7 @@ gimplify_modify_expr (tree *expr_p, gimple_seq *pre_p, gimple_seq *post_p,
       SET_DECL_DEBUG_EXPR (*from_p, *to_p);
    }
 
-  if (want_value && TREE_THIS_VOLATILE (*to_p))
+  if (want_value && (TREE_THIS_VOLATILE (*to_p) || TREE_THIS_DEPENDENT_PTR (*to_p)))
     *from_p = get_initialized_tmp_var (*from_p, pre_p, post_p);
 
   if (TREE_CODE (*from_p) == CALL_EXPR)
@@ -5850,7 +5855,7 @@ gimplify_modify_expr (tree *expr_p, gimple_seq *pre_p, gimple_seq *post_p,
 
   if (want_value)
     {
-      *expr_p = TREE_THIS_VOLATILE (*to_p) ? *from_p : unshare_expr (*to_p);
+      *expr_p = (TREE_THIS_VOLATILE (*to_p) || TREE_THIS_DEPENDENT_PTR (*to_p)) ? *from_p : unshare_expr (*to_p);
       return GS_OK;
     }
   else
@@ -11622,7 +11627,8 @@ computable_teams_clause (tree *tp, int *walk_subtrees, void *)
 	  || DECL_HAS_VALUE_EXPR_P (*tp)
 	  || DECL_THREAD_LOCAL_P (*tp)
 	  || TREE_SIDE_EFFECTS (*tp)
-	  || TREE_THIS_VOLATILE (*tp))
+	  || TREE_THIS_VOLATILE (*tp)
+	  || TREE_THIS_DEPENDENT_PTR (*tp))
 	return *tp;
       if (is_global_var (*tp)
 	  && (lookup_attribute ("omp declare target", DECL_ATTRIBUTES (*tp))
@@ -13394,7 +13400,7 @@ gimplify_expr (tree *expr_p, gimple_seq *pre_p, gimple_seq *post_p,
       if (TREE_CODE (*expr_p) == LABEL_DECL
 	  || !TREE_SIDE_EFFECTS (*expr_p))
 	*expr_p = NULL;
-      else if (!TREE_THIS_VOLATILE (*expr_p))
+      else if (!TREE_THIS_VOLATILE (*expr_p) && !TREE_THIS_DEPENDENT_PTR (*expr_p))
 	{
 	  /* This is probably a _REF that contains something nested that
 	     has side effects.  Recurse through the operands to find it.  */
@@ -13939,6 +13945,7 @@ gimplify_function_tree (tree fndecl)
       if ((TREE_CODE (TREE_TYPE (parm)) == COMPLEX_TYPE
 	   || TREE_CODE (TREE_TYPE (parm)) == VECTOR_TYPE)
           && !TREE_THIS_VOLATILE (parm)
+	  && !TREE_THIS_DEPENDENT_PTR (parm)
           && !needs_to_live_in_memory (parm))
         DECL_GIMPLE_REG_P (parm) = 1;
     }

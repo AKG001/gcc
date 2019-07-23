@@ -330,7 +330,7 @@ varpool_node::ctor_useable_for_folding_p (void)
   if (TREE_CODE (decl) == CONST_DECL
       || DECL_IN_CONSTANT_POOL (decl))
     return true;
-  if (TREE_THIS_VOLATILE (decl))
+  if (TREE_THIS_VOLATILE (decl) || TREE_THIS_DEPENDENT_PTR (decl))
     return false;
 
   /* Avoid attempts to load constructors that was not streamed.  */
@@ -404,7 +404,7 @@ ctor_for_folding (tree decl)
       || DECL_IN_CONSTANT_POOL (decl))
     return DECL_INITIAL (decl);
 
-  if (TREE_THIS_VOLATILE (decl))
+  if (TREE_THIS_VOLATILE (decl) || TREE_THIS_DEPENDENT_PTR (decl))
     return error_mark_node;
 
   /* Do not care about automatic variables.  Those are never initialized

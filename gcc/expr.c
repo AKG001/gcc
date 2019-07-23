@@ -4707,7 +4707,8 @@ optimize_bitfield_assignment_op (poly_uint64 pbitsize,
       || !GET_MODE_BITSIZE (str_mode).is_constant (&str_bitsize)
       || str_bitsize > BITS_PER_WORD
       || TREE_SIDE_EFFECTS (to)
-      || TREE_THIS_VOLATILE (to))
+      || TREE_THIS_VOLATILE (to)
+      || TREE_THIS_DEPENDENT_PTR (to))
     return false;
 
   STRIP_NOPS (src);
@@ -7198,7 +7199,7 @@ get_inner_reference (tree exp, poly_int64_pod *pbitsize,
       tree field = TREE_OPERAND (exp, 1);
       size_tree = DECL_SIZE (field);
       if (flag_strict_volatile_bitfields > 0
-	  && TREE_THIS_VOLATILE (exp)
+	  && (TREE_THIS_VOLATILE (exp) || TREE_THIS_DEPENDENT_PTR (exp))
 	  && DECL_BIT_FIELD_TYPE (field)
 	  && DECL_MODE (field) != BLKmode)
 	/* Volatile bitfields should be accessed in the mode of the
@@ -7335,7 +7336,7 @@ get_inner_reference (tree exp, poly_int64_pod *pbitsize,
 	}
 
       /* If any reference in the chain is volatile, the effect is volatile.  */
-      if (TREE_THIS_VOLATILE (exp))
+      if (TREE_THIS_VOLATILE (exp) || TREE_THIS_DEPENDENT_PTR (exp))
 	*pvolatilep = 1;
 
       exp = TREE_OPERAND (exp, 0);
@@ -9845,7 +9846,7 @@ expand_expr_real_1 (tree exp, rtx target, machine_mode tmode,
 
       /* Ensure we reference a volatile object even if value is ignored, but
 	 don't do this if all we are doing is taking its address.  */
-      if (TREE_THIS_VOLATILE (exp)
+      if ((TREE_THIS_VOLATILE (exp) || TREE_THIS_DEPENDENT_PTR (exp))
 	  && TREE_CODE (exp) != FUNCTION_DECL
 	  && mode != VOIDmode && mode != BLKmode
 	  && modifier != EXPAND_CONST_ADDRESS)
@@ -10365,6 +10366,8 @@ expand_expr_real_1 (tree exp, rtx target, machine_mode tmode,
 	set_mem_addr_space (temp, as);
 	if (TREE_THIS_VOLATILE (exp))
 	  MEM_VOLATILE_P (temp) = 1;
+	if (TREE_THIS_DEPENDENT_PTR (exp))
+	  MEM_DEPENDENT_PTR_P (temp) = 1;
 	if (modifier != EXPAND_WRITE
 	    && modifier != EXPAND_MEMORY
 	    && !inner_reference_p

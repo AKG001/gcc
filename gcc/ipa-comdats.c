@@ -264,6 +264,7 @@ ipa_comdats (void)
 	     || symbol->force_output
 	     || symbol->used_from_other_partition
 	     || TREE_THIS_VOLATILE (symbol->decl)
+	     || TREE_THIS_DEPENDENT_PTR (symbol->decl)
 	     || symbol->get_section ()
 	     || (TREE_CODE (symbol->decl) == FUNCTION_DECL
 		 && (DECL_STATIC_CONSTRUCTOR (symbol->decl)

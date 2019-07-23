@@ -3978,11 +3978,11 @@ find_memory (rtx_insn *insn)
   FOR_EACH_SUBRTX (iter, array, PATTERN (insn), NONCONST)
     {
       const_rtx x = *iter;
-      if (GET_CODE (x) == ASM_OPERANDS && MEM_VOLATILE_P (x))
+      if (GET_CODE (x) == ASM_OPERANDS && (MEM_VOLATILE_P (x) || MEM_DEPENDENT_PTR_P (x)))
 	flags |= MEMREF_VOLATILE;
       else if (MEM_P (x))
 	{
-	  if (MEM_VOLATILE_P (x))
+	  if (MEM_VOLATILE_P (x) || MEM_DEPENDENT_PTR_P (x))
 	    flags |= MEMREF_VOLATILE;
 	  else if (!MEM_READONLY_P (x))
 	    flags |= MEMREF_NORMAL;
@@ -4009,7 +4009,7 @@ find_memory_stores (rtx x, const_rtx pat ATTRIBUTE_UNUSED,
     *pflags |= MEMREF_VOLATILE;
   if (!MEM_P (x))
     return;
-  *pflags |= MEM_VOLATILE_P (x) ? MEMREF_VOLATILE : MEMREF_NORMAL;
+  *pflags |= (MEM_VOLATILE_P (x) || MEM_DEPENDENT_PTR_P (x)) ? MEMREF_VOLATILE : MEMREF_NORMAL;
 }
 
 /* Scan BB backwards, using df_simulate functions to keep track of

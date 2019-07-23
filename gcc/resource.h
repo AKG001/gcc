@@ -30,6 +30,7 @@ struct resources
 {
   char memory;		/* Insn sets or needs a memory location.  */
   char volatil;		/* Insn sets or needs a volatile memory loc.  */
+  char dependent_ptr;   /* Insn sets or needs a dependent_ptr memory loc.  */
   char cc;		/* Insn sets or needs the condition codes.  */
   HARD_REG_SET regs;	/* Which registers are set or needed.  */
 };

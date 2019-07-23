@@ -861,7 +861,7 @@ flags_from_decl_or_type (const_tree exp)
   else
     gcc_unreachable ();
 
-  if (TREE_THIS_VOLATILE (exp))
+ if (TREE_THIS_VOLATILE (exp))
     {
       flags |= ECF_NORETURN;
       if (flags & (ECF_CONST|ECF_PURE))

@@ -2603,6 +2603,8 @@ volatile_insn_p (const_rtx x)
     case ADDR_DIFF_VEC:
     case CALL:
     case MEM:
+      if(MEM_P (x) && MEM_DEPENDENT_PTR_P (x))
+	return 1;
       return 0;
 
     case UNSPEC_VOLATILE:
@@ -2823,7 +2825,7 @@ may_trap_p_1 (const_rtx x, unsigned flags)
     case MEM:
       /* Recognize specific pattern of stack checking probes.  */
       if (flag_stack_check
-	  && MEM_VOLATILE_P (x)
+	  && (MEM_VOLATILE_P (x) || MEM_DEPENDENT_PTR_P (x))
 	  && XEXP (x, 0) == stack_pointer_rtx)
 	return 1;
       if (/* MEM_NOTRAP_P only relates to the actual position of the memory

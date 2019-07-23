@@ -1387,7 +1387,7 @@ cselib_lookup_mem (rtx x, int create)
   cselib_val *addr;
   cselib_val *mem_elt;
 
-  if (MEM_VOLATILE_P (x) || mode == BLKmode
+  if (MEM_VOLATILE_P (x) || MEM_DEPENDENT_PTR_P (x) || mode == BLKmode
       || !cselib_record_memory
       || (FLOAT_MODE_P (mode) && flag_float_store))
     return 0;

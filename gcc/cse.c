@@ -2415,7 +2415,8 @@ hash_rtx_cb (const_rtx x, machine_mode mode,
     case MEM:
       /* We don't record if marked volatile or if BLKmode since we don't
 	 know the size of the move.  */
-      if (do_not_record_p && (MEM_VOLATILE_P (x) || GET_MODE (x) == BLKmode))
+
+      if (do_not_record_p && (MEM_VOLATILE_P (x) || GET_MODE (x) == BLKmode || MEM_DEPENDENT_PTR_P(x)))
 	{
 	  *do_not_record_p = 1;
 	  return 0;
@@ -2436,7 +2437,8 @@ hash_rtx_cb (const_rtx x, machine_mode mode,
 	 marked by a USE which mentions BLKmode memory.
 	 See calls.c:emit_call_1.  */
       if (MEM_P (XEXP (x, 0))
-	  && ! MEM_VOLATILE_P (XEXP (x, 0)))
+	  && ! MEM_VOLATILE_P (XEXP (x, 0))
+	  && ! MEM_DEPENDENT_PTR_P (XEXP (x, 0)))
 	{
 	  hash += (unsigned) USE;
 	  x = XEXP (x, 0);
@@ -2685,7 +2687,8 @@ exp_equiv_p (const_rtx x, const_rtx y, int validate, bool for_gcse)
 	{
 	  /* A volatile mem should not be considered equivalent to any
 	     other.  */
-	  if (MEM_VOLATILE_P (x) || MEM_VOLATILE_P (y))
+	  if (MEM_VOLATILE_P (x) || MEM_VOLATILE_P (y)
+	      || MEM_DEPENDENT_PTR_P (x) || MEM_DEPENDENT_PTR_P (y))
 	    return 0;
 
 	  /* Can't merge two expressions in different alias sets, since we
@@ -2735,7 +2738,8 @@ exp_equiv_p (const_rtx x, const_rtx y, int validate, bool for_gcse)
 	 disregard filename and line numbers.  */
 
       /* A volatile asm isn't equivalent to any other.  */
-      if (MEM_VOLATILE_P (x) || MEM_VOLATILE_P (y))
+      if (MEM_VOLATILE_P (x) || MEM_VOLATILE_P (y)
+	  || MEM_DEPENDENT_PTR_P (x) || MEM_DEPENDENT_PTR_P (y))
 	return 0;
 
       if (GET_MODE (x) != GET_MODE (y)

@@ -1912,7 +1912,7 @@ create_stack_guard (void)
 {
   tree guard = build_decl (DECL_SOURCE_LOCATION (current_function_decl),
 			   VAR_DECL, NULL, ptr_type_node);
-  TREE_THIS_VOLATILE (guard) = 1;
+  TREE_THIS_VOLATILE (guard) = TREE_THIS_DEPENDENT_PTR (guard) = 1;
   TREE_USED (guard) = 1;
   expand_one_stack_var (guard);
   crtl->stack_protect_guard = guard;

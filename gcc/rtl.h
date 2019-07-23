@@ -395,6 +395,9 @@ struct GTY((desc("0"), tag("0"),
      1 in a VALUE or DEBUG_EXPR is NO_LOC_P in var-tracking.c.
      Dumped as "/i" in RTL dumps.  */
   unsigned return_val : 1;
+  /* 1 if a MEM holds a reference that is a dependent pointer,
+     Dumped as "/d" in RTL_DUMPS.  */
+  unsigned int dependent_ptr : 1;
 
   union {
     /* The final union field is aligned to 64 bits on LP64 hosts,
@@ -2566,6 +2569,9 @@ do {								        \
 #define MEM_VOLATILE_P(RTX)						\
   (RTL_FLAG_CHECK3 ("MEM_VOLATILE_P", (RTX), MEM, ASM_OPERANDS,		\
 		    ASM_INPUT)->volatil)
+/* 1 if RTX is a mem for dependent pointer reference.  */
+#define MEM_DEPENDENT_PTR_P(RTX) \
+  (RTL_FLAG_CHECK1 ("MEM_DEPENDENT_PTR_P", (RTX), MEM)->dependent_ptr)
 
 /* 1 if RTX is a mem that cannot trap.  */
 #define MEM_NOTRAP_P(RTX) \
@@ -2625,6 +2631,7 @@ do {								        \
 /* Copy the attributes that apply to memory locations from RHS to LHS.  */
 #define MEM_COPY_ATTRIBUTES(LHS, RHS)				\
   (MEM_VOLATILE_P (LHS) = MEM_VOLATILE_P (RHS),			\
+   MEM_DEPENDENT_PTR_P (LHS) = MEM_DEPENDENT_PTR_P (RHS),	\
    MEM_NOTRAP_P (LHS) = MEM_NOTRAP_P (RHS),			\
    MEM_READONLY_P (LHS) = MEM_READONLY_P (RHS),			\
    MEM_KEEP_ALIAS_SET_P (LHS) = MEM_KEEP_ALIAS_SET_P (RHS),	\

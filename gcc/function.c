@@ -933,7 +933,10 @@ assign_stack_temp_for_type (machine_mode mode, poly_int64 size, tree type)
 
   /* If a type is specified, set the relevant flags.  */
   if (type != 0)
-    MEM_VOLATILE_P (slot) = (TYPE_VOLATILE (type) || TYPE_DEPENDENT_PTR (type));
+  {
+    MEM_VOLATILE_P (slot) = TYPE_VOLATILE (type);
+    MEM_DEPENDENT_PTR_P (slot) = TYPE_DEPENDENT_PTR (type);
+  }
   MEM_NOTRAP_P (slot) = 1;
 
   return slot;
