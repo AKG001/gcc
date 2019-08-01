@@ -345,6 +345,7 @@ const struct c_common_resword c_common_reswords[] =
   { "_Alignas",		RID_ALIGNAS,   D_CONLY },
   { "_Alignof",		RID_ALIGNOF,   D_CONLY },
   { "_Atomic",		RID_ATOMIC,    D_CONLY },
+  { "_Dependent_ptr",   RID_DEPENDENT_PTR,  0 },
   { "_Bool",		RID_BOOL,      D_CONLY },
   { "_Complex",		RID_COMPLEX,	0 },
   { "_Imaginary",	RID_IMAGINARY, D_CONLY },
@@ -3545,6 +3546,11 @@ c_apply_type_quals_to_decl (int type_quals, tree decl)
     {
       TREE_SIDE_EFFECTS (decl) = 1;
       TREE_THIS_VOLATILE (decl) = 1;
+    }
+  if (type_quals & TYPE_QUAL_DEPENDENT_PTR)
+    {
+      TREE_SIDE_EFFECTS (decl) = 1;
+      TREE_THIS_DEPENDENT_PTR (decl) = 1;
     }
   if (type_quals & TYPE_QUAL_RESTRICT)
     {
@@ -7851,6 +7857,7 @@ keyword_is_type_qualifier (enum rid keyword)
     case RID_VOLATILE:
     case RID_RESTRICT:
     case RID_ATOMIC:
+    case RID_DEPENDENT_PTR:
       return true;
     default:
       return false;

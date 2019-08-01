@@ -567,7 +567,8 @@ enum cv_qualifier {
   TYPE_QUAL_CONST    = 0x1,
   TYPE_QUAL_VOLATILE = 0x2,
   TYPE_QUAL_RESTRICT = 0x4,
-  TYPE_QUAL_ATOMIC   = 0x8
+  TYPE_QUAL_ATOMIC   = 0x8,
+  TYPE_QUAL_DEPENDENT_PTR = 0x10
 };
 
 /* Standard named or nameless data types of the C compiler.  */
@@ -590,6 +591,8 @@ enum tree_index {
   TI_ATOMICSI_TYPE,
   TI_ATOMICDI_TYPE,
   TI_ATOMICTI_TYPE,
+
+  TI_DEPENDENT_PTR_TYPE,
 
   TI_UINT16_TYPE,
   TI_UINT32_TYPE,
@@ -969,6 +972,7 @@ struct GTY(()) tree_base {
   unsigned asm_written_flag: 1;
   unsigned nowarning_flag : 1;
   unsigned visited : 1;
+  unsigned dependent_ptr_flag : 1;
 
   unsigned used_flag : 1;
   unsigned nothrow_flag : 1;

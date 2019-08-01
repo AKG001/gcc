@@ -4172,6 +4172,7 @@ check_format_types (const substring_loc &fmt_loc,
 		  && (TYPE_READONLY (cur_type)
 		      || TYPE_VOLATILE (cur_type)
 		      || TYPE_ATOMIC (cur_type)
+		      || TYPE_DEPENDENT_PTR (cur_type)
 		      || TYPE_RESTRICT (cur_type)))
 		warning (OPT_Wformat_, "extra type qualifiers in format "
 			 "argument (argument %d)",

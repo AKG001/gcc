@@ -5213,6 +5213,7 @@ fld_type_variant (tree first, tree t, class free_lang_data_d *fld,
   TYPE_READONLY (v) = TYPE_READONLY (t);
   TYPE_VOLATILE (v) = TYPE_VOLATILE (t);
   TYPE_ATOMIC (v) = TYPE_ATOMIC (t);
+  TYPE_DEPENDENT_PTR (v) = TYPE_DEPENDENT_PTR (t);
   TYPE_RESTRICT (v) = TYPE_RESTRICT (t);
   TYPE_ADDR_SPACE (v) = TYPE_ADDR_SPACE (t);
   TYPE_NAME (v) = TYPE_NAME (t);
@@ -6348,6 +6349,7 @@ set_type_quals (tree type, int type_quals)
   TYPE_VOLATILE (type) = (type_quals & TYPE_QUAL_VOLATILE) != 0;
   TYPE_RESTRICT (type) = (type_quals & TYPE_QUAL_RESTRICT) != 0;
   TYPE_ATOMIC (type) = (type_quals & TYPE_QUAL_ATOMIC) != 0;
+  TYPE_DEPENDENT_PTR (type) = (type_quals & TYPE_QUAL_DEPENDENT_PTR) != 0;
   TYPE_ADDR_SPACE (type) = DECODE_QUAL_ADDR_SPACE (type_quals);
 }
 

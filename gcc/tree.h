@@ -789,6 +789,9 @@ extern void omp_clause_range_check_failed (const_tree, const char *, int,
    If this bit is set in an expression, so is TREE_SIDE_EFFECTS.  */
 #define TREE_THIS_VOLATILE(NODE) ((NODE)->base.volatile_flag)
 
+/* Nonzero means this expression is involved in some data dependency.  */
+#define TREE_THIS_DEPENDENT_PTR(NODE) ((NODE)->base.dependent_ptr_flag)
+
 /* Nonzero means this node will not trap.  In an INDIRECT_REF, means
    accessing the memory pointed to won't generate a trap.  However,
    this only applies to an object when used appropriately: it doesn't
@@ -2070,6 +2073,9 @@ extern machine_mode vector_type_mode (const_tree);
 /* Nonzero in a type considered atomic as a whole.  */
 #define TYPE_ATOMIC(NODE) (TYPE_CHECK (NODE)->base.u.bits.atomic_flag)
 
+/* Nonzero in a type considered dependent_ptr as a whole.  */
+#define TYPE_DEPENDENT_PTR(NODE) (TYPE_CHECK (NODE)->base.dependent_ptr_flag)
+
 /* Means this type is const-qualified.  */
 #define TYPE_READONLY(NODE) (TYPE_CHECK (NODE)->base.readonly_flag)
 
@@ -2100,6 +2106,7 @@ extern machine_mode vector_type_mode (const_tree);
   ((int) ((TYPE_READONLY (NODE) * TYPE_QUAL_CONST)		\
 	  | (TYPE_VOLATILE (NODE) * TYPE_QUAL_VOLATILE)		\
 	  | (TYPE_ATOMIC (NODE) * TYPE_QUAL_ATOMIC)		\
+	  | (TYPE_DEPENDENT_PTR (NODE) * TYPE_QUAL_DEPENDENT_PTR)   \
 	  | (TYPE_RESTRICT (NODE) * TYPE_QUAL_RESTRICT)		\
 	  | (ENCODE_QUAL_ADDR_SPACE (TYPE_ADDR_SPACE (NODE)))))
 
@@ -2108,6 +2115,7 @@ extern machine_mode vector_type_mode (const_tree);
   ((int) ((TYPE_READONLY (NODE) * TYPE_QUAL_CONST)		\
 	  | (TYPE_VOLATILE (NODE) * TYPE_QUAL_VOLATILE)		\
 	  | (TYPE_ATOMIC (NODE) * TYPE_QUAL_ATOMIC)		\
+	  | (TYPE_DEPENDENT_PTR (NODE) * TYPE_QUAL_DEPENDENT_PTR)   \
 	  | (TYPE_RESTRICT (NODE) * TYPE_QUAL_RESTRICT)))
 
 /* The same as TYPE_QUALS without the address space and atomic 
@@ -3939,6 +3947,8 @@ tree_strip_any_location_wrapper (tree exp)
 #define atomicSI_type_node	global_trees[TI_ATOMICSI_TYPE]
 #define atomicDI_type_node	global_trees[TI_ATOMICDI_TYPE]
 #define atomicTI_type_node	global_trees[TI_ATOMICTI_TYPE]
+
+#define dependent_ptrTI_type_node global_trees[TI_DEPENDENT_PTR_TYPE]
 
 #define uint16_type_node		global_trees[TI_UINT16_TYPE]
 #define uint32_type_node		global_trees[TI_UINT32_TYPE]

@@ -34,6 +34,9 @@ along with GCC; see the file COPYING3.  If not see
 /* In a RECORD_TYPE or UNION_TYPE, nonzero if any component is volatile.  */
 #define C_TYPE_FIELDS_VOLATILE(TYPE) TREE_LANG_FLAG_2 (TYPE)
 
+/* In a RECORD_TYPE or UNION_TYPE, nonzero if any component is dependent pointer.  */
+#define C_TYPE_FIELDS_DEPENDENT_PTR(TYPE) TREE_LANG_FLAG_3 (TYPE)
+
 /* In a RECORD_TYPE or UNION_TYPE or ENUMERAL_TYPE
    nonzero if the definition of the type has already started.  */
 #define C_TYPE_BEING_DEFINED(TYPE) TYPE_LANG_FLAG_0 (TYPE)
@@ -279,6 +282,7 @@ enum c_declspec_word {
   cdw_volatile,
   cdw_restrict,
   cdw_atomic,
+  cdw_dependent_ptr,
   cdw_saturating,
   cdw_alignas,
   cdw_address_space,
@@ -387,6 +391,8 @@ struct c_declspecs {
   BOOL_BITFIELD restrict_p : 1;
   /* Whether "_Atomic" was specified.  */
   BOOL_BITFIELD atomic_p : 1;
+  /* Whether "_Dependent_ptr" was specified.  */
+  BOOL_BITFIELD dependent_ptr_p : 1;
   /* Whether "_Sat" was specified.  */
   BOOL_BITFIELD saturating_p : 1;
   /* Whether any alignment specifier (even with zero alignment) was

@@ -2587,6 +2587,9 @@ merge_decls (tree newdecl, tree olddecl, tree newtype, tree oldtype)
   if (TREE_THIS_VOLATILE (newdecl))
     TREE_THIS_VOLATILE (olddecl) = 1;
 
+  if (TREE_THIS_DEPENDENT_PTR (newdecl))
+    TREE_THIS_DEPENDENT_PTR (olddecl) = 1;
+
   /* Merge deprecatedness.  */
   if (TREE_DEPRECATED (newdecl))
     TREE_DEPRECATED (olddecl) = 1;
@@ -2638,6 +2641,7 @@ merge_decls (tree newdecl, tree olddecl, tree newtype, tree oldtype)
 	  DECL_NO_INSTRUMENT_FUNCTION_ENTRY_EXIT (newdecl)
 	    |= DECL_NO_INSTRUMENT_FUNCTION_ENTRY_EXIT (olddecl);
 	  TREE_THIS_VOLATILE (newdecl) |= TREE_THIS_VOLATILE (olddecl);
+	  TREE_THIS_DEPENDENT_PTR (newdecl) |= TREE_THIS_DEPENDENT_PTR (olddecl);
 	  DECL_IS_MALLOC (newdecl) |= DECL_IS_MALLOC (olddecl);
 	  if (DECL_IS_OPERATOR_NEW_P (olddecl))
 	    DECL_SET_IS_OPERATOR_NEW (newdecl, true);
@@ -4544,6 +4548,7 @@ shadow_tag_warned (const struct c_declspecs *declspecs, int warned)
 		   && (declspecs->const_p
 		       || declspecs->volatile_p
 		       || declspecs->atomic_p
+		       || declspecs->dependent_ptr_p
 		       || declspecs->restrict_p
 		       || declspecs->address_space))
 	    {
@@ -4672,6 +4677,7 @@ quals_from_declspecs (const struct c_declspecs *specs)
 	       | (specs->volatile_p ? TYPE_QUAL_VOLATILE : 0)
 	       | (specs->restrict_p ? TYPE_QUAL_RESTRICT : 0)
 	       | (specs->atomic_p ? TYPE_QUAL_ATOMIC : 0)
+	       | (specs->dependent_ptr_p ? TYPE_QUAL_DEPENDENT_PTR : 0)
 	       | (ENCODE_QUAL_ADDR_SPACE (specs->address_space)));
   gcc_assert (!specs->type
 	      && !specs->decl_attr
@@ -5837,6 +5843,7 @@ grokdeclarator (const struct c_declarator *declarator,
   int restrictp;
   int volatilep;
   int atomicp;
+  int dependent_ptrp;
   int type_quals = TYPE_UNQUALIFIED;
   tree name = NULL_TREE;
   bool funcdef_flag = false;
@@ -6003,6 +6010,7 @@ grokdeclarator (const struct c_declarator *declarator,
   restrictp = declspecs->restrict_p + TYPE_RESTRICT (element_type);
   volatilep = declspecs->volatile_p + TYPE_VOLATILE (element_type);
   atomicp = declspecs->atomic_p + TYPE_ATOMIC (element_type);
+  dependent_ptrp = declspecs->dependent_ptr_p + TYPE_DEPENDENT_PTR (element_type);
   as1 = declspecs->address_space;
   as2 = TYPE_ADDR_SPACE (element_type);
   address_space = ADDR_SPACE_GENERIC_P (as1)? as2 : as1;
@@ -6015,6 +6023,8 @@ grokdeclarator (const struct c_declarator *declarator,
     pedwarn_c90 (loc, OPT_Wpedantic, "duplicate %<volatile%>");
   if (atomicp > 1)
     pedwarn_c90 (loc, OPT_Wpedantic, "duplicate %<_Atomic%>");
+  if (dependent_ptrp > 1)
+    pedwarn_c90 (loc, OPT_Wpedantic, "duplicate %<_Dependent_ptr%>");
 
   if (!ADDR_SPACE_GENERIC_P (as1) && !ADDR_SPACE_GENERIC_P (as2) && as1 != as2)
     error_at (loc, "conflicting named address spaces (%s vs %s)",
@@ -6031,6 +6041,7 @@ grokdeclarator (const struct c_declarator *declarator,
 		| (restrictp ? TYPE_QUAL_RESTRICT : 0)
 		| (volatilep ? TYPE_QUAL_VOLATILE : 0)
 		| (atomicp ? TYPE_QUAL_ATOMIC : 0)
+		| (dependent_ptrp ? TYPE_QUAL_DEPENDENT_PTR : 0)
 		| ENCODE_QUAL_ADDR_SPACE (address_space));
   if (type_quals != TYPE_QUALS (element_type))
     orig_qual_type = NULL_TREE;
@@ -6041,6 +6052,13 @@ grokdeclarator (const struct c_declarator *declarator,
      actually applying it to an element of that array.  */
   if (declspecs->atomic_p && TREE_CODE (type) == ARRAY_TYPE)
     error_at (loc, "%<_Atomic%>-qualified array type");
+
+  /* Applying the _Dependent_ptr qualifier to an array type (through
+     the use of typedefs or typeof) must be detected here.  If the
+     qualifier is introduced later, any appearance of applying it to
+     an array is actually applying it to an element of that array.  */
+  if (declspecs->dependent_ptr_p && TREE_CODE (type) == ARRAY_TYPE)
+    error_at (loc, "%<_Dependent_ptr%>-qualified array type");
 
   /* Warn about storage classes that are invalid for certain
      kinds of declarations (parameters, typenames, etc.).  */
@@ -7214,6 +7232,10 @@ grokdeclarator (const struct c_declarator *declarator,
 	/* An uninitialized decl with `extern' is a reference.  */
 	int extern_ref = !initialized && storage_class == csc_extern;
 
+	/* _Dependent_ptr qualifier only reserved for pointer type variable */
+	if ((type_quals & TYPE_QUAL_DEPENDENT_PTR) && (!POINTER_TYPE_P (type)))
+	  error_at (loc, "invalid use of %<_Dependent_ptr%>");
+
 	type = c_build_qualified_type (type, type_quals, orig_qual_type,
 				       orig_qual_indirect);
 
@@ -7294,7 +7316,7 @@ grokdeclarator (const struct c_declarator *declarator,
 	DECL_REGISTER (decl) = 1;
       }
 
-    /* Record constancy and volatility.  */
+    /* Record constancy, data dependency and volatility.  */
     c_apply_type_quals_to_decl (type_quals, decl);
 
     /* Apply _Alignas specifiers.  */
@@ -8257,6 +8279,11 @@ finish_struct (location_t loc, tree t, tree fieldlist, tree attributes,
 	 treated in some ways as volatile.  */
       if (TREE_THIS_VOLATILE (x))
 	C_TYPE_FIELDS_VOLATILE (t) = 1;
+
+      /* Any field that is a dependent pointer means variables of this
+	 type must be treated in some ways as dependent pointer.  */
+      if (TREE_THIS_DEPENDENT_PTR (x))
+	C_TYPE_FIELDS_DEPENDENT_PTR (t) = 1;
 
       /* Any field of nominal variable size implies structure is too.  */
       if (C_DECL_VARIABLE_SIZE (x))
@@ -10176,6 +10203,12 @@ declspecs_add_qual (location_t loc,
       specs->atomic_p = true;
       prev_loc = specs->locations[cdw_atomic];
       specs->locations[cdw_atomic] = loc;
+      break;
+    case RID_DEPENDENT_PTR:
+      dupe = specs->dependent_ptr_p;
+      specs->dependent_ptr_p = true;
+      prev_loc = specs->locations[cdw_dependent_ptr];
+      specs->locations[cdw_dependent_ptr] = loc;
       break;
     default:
       gcc_unreachable ();
